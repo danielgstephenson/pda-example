@@ -1,0 +1,23 @@
+{
+  "name": "pda-example",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "npm run build && npm run start",
+    "build": "npx parcel build ./src/index.html --dist-dir \"dist\"",
+    "start": "npx serve -s dist"
+  },
+  "author": "",
+  "license": "",
+  "description": "",
+  "devDependencies": {
+    "parcel": "^2.13.3",
+    "ts-standard": "^12.0.2",
+    "typescript": "^5.7.2"
+  },
+  "ts-standard": {
+    "project": "src/tsconfig.json",
+    "ignore": [
+      "dist"
+    ]
+  }
+}
