@@ -1,5 +1,8 @@
+import { boxToSimplex } from './math/math'
+import { Vec2 } from './math/vec2'
+
 export class Triangle {
-  static resolution = 50
+  static resolution = 100
   canvas: HTMLCanvasElement
   context: CanvasRenderingContext2D
   imageData: ImageData
@@ -19,16 +22,21 @@ export class Triangle {
   }
 
   getImageData (): ImageData {
-    const w = Triangle.resolution
-    const h = Triangle.resolution
-    const imageArray = new Uint8ClampedArray(4 * w * h)
+    const width = Triangle.resolution
+    const height = Triangle.resolution
+    const imageArray = new Uint8ClampedArray(4 * width * height)
     for (let i = 0; i < imageArray.length; i += 4) {
+      const pixel = Math.floor(i / 4)
+      const x = (pixel % width + 0.5) / width
+      const y = (Math.floor(pixel / width) + 0.5) / height
+      const w = boxToSimplex(new Vec2(x, y))
+      if (Math.min(w.x, w.y, w.z) < 0) continue
       imageArray[i + 0] = 0 // R value
-      imageArray[i + 1] = Math.random() > 0.5 ? 190 : 0// G value
+      imageArray[i + 1] = 170// G value
       imageArray[i + 2] = 0 // B value
       imageArray[i + 3] = 255 // A value
     }
-    return new ImageData(imageArray, w, h)
+    return new ImageData(imageArray, width, height)
   }
 
   draw (): void {
