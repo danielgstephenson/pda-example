@@ -25,17 +25,18 @@ export class Triangle {
     const width = Triangle.resolution
     const height = Triangle.resolution
     const imageArray = new Uint8ClampedArray(4 * width * height)
-    for (let i = 0; i < imageArray.length; i += 4) {
+    imageArray.forEach((uint, i) => {
+      if (i % 4 !== 0) return
       const pixel = Math.floor(i / 4)
       const x = (pixel % width + 0.5) / width
       const y = (Math.floor(pixel / width) + 0.5) / height
       const w = boxToSimplex(new Vec2(x, y))
-      if (Math.min(w.x, w.y, w.z) < 0) continue
+      if (Math.min(w.x, w.y, w.z) < 0) return
       imageArray[i + 0] = 0 // R value
       imageArray[i + 1] = 170// G value
       imageArray[i + 2] = 0 // B value
       imageArray[i + 3] = 255 // A value
-    }
+    })
     return new ImageData(imageArray, width, height)
   }
 
