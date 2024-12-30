@@ -57,10 +57,9 @@ export class Triangle {
     const size = this.drawSize
     const xMid = x + 0.5 * size
     const height = 0.5 * sqrt3 * size
-    const halfPixel = 0.5 * size / Triangle.resolution
-    this.context.moveTo(x + halfPixel, y + halfPixel)
-    this.context.lineTo(x + size - halfPixel, y + halfPixel)
-    this.context.lineTo(xMid, y + height - halfPixel)
+    this.context.moveTo(x, y)
+    this.context.lineTo(x + size, y)
+    this.context.lineTo(xMid, y + height)
     this.context.closePath()
     this.context.clip()
     this.context.drawImage(this.offscreenCanvas, x, y, size, size)
