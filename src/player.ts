@@ -1,18 +1,20 @@
-import { boxToSimplex, round, roundSimplex, simplexToBox, sqrt3, toInnerSimplex } from './math/math'
+import { vecToSpend, spendToVec, sqrt3, toValidSpend } from './math/math'
 import { Vec2 } from './math/vec2'
-import { Vec3 } from './math/vec3'
+import { Spend } from './math/spend'
 
-export class Triangle {
+export class Player {
   static resolution = 100
   canvas: HTMLCanvasElement
   context: CanvasRenderingContext2D
   imageData: ImageData
   offscreenCanvas: OffscreenCanvas
   offscreenContext: OffscreenCanvasRenderingContext2D
-  strategy: Vec3 | null = null
+
   drawX = 0.1
   drawY = 0.1
   drawSize = 0.8
+
+  spend = new Spend(1 / 3, 1 / 3, 1 / 3)
 
   constructor (canvas: HTMLCanvasElement) {
     this.canvas = canvas
@@ -21,24 +23,24 @@ export class Triangle {
     this.canvas.style.imageRendering = 'pixelated'
     this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D
     this.imageData = this.getImageData()
-    this.offscreenCanvas = new OffscreenCanvas(Triangle.resolution, Triangle.resolution)
+    this.offscreenCanvas = new OffscreenCanvas(Player.resolution, Player.resolution)
     this.offscreenContext = this.offscreenCanvas.getContext('2d') as OffscreenCanvasRenderingContext2D
     this.canvas.addEventListener('mousedown', (event: MouseEvent) => this.onMouseDown(event))
     this.draw()
   }
 
   getImageData (): ImageData {
-    const width = Triangle.resolution
-    const height = Triangle.resolution
+    const width = Player.resolution
+    const height = Player.resolution
     const imageArray = new Uint8ClampedArray(4 * width * height)
     imageArray.forEach((uint, i) => {
       if (i % 4 !== 0) return
       const pixel = Math.floor(i / 4)
       const x = (pixel % width + 0.5) / width
       const y = (Math.floor(pixel / width) + 0.5) / height
-      const w = toInnerSimplex(boxToSimplex(new Vec2(x, y)))
+      const w = toValidSpend(vecToSpend(new Vec2(x, y)))
       imageArray[i + 0] = 0 // R value
-      imageArray[i + 1] = 170// G value
+      imageArray[i + 1] = w.produce * w.produce * 250 // G value
       imageArray[i + 2] = 0 // B value
       imageArray[i + 3] = 255 // A value
     })
@@ -68,9 +70,9 @@ export class Triangle {
   }
 
   drawStrategy (): void {
-    if (this.strategy == null) return
+    if (this.spend == null) return
     this.resetContext()
-    const b = simplexToBox(this.strategy)
+    const b = spendToVec(this.spend)
     const x = this.drawX + this.drawSize * b.x
     const y = this.drawX + this.drawSize * b.y
     this.context.lineWidth = 0.005
@@ -94,10 +96,11 @@ export class Triangle {
     const boxX = (canvasX - this.drawX) / this.drawSize
     const boxY = (canvasY - this.drawY) / this.drawSize
     const b = new Vec2(boxX, boxY)
-    const s = boxToSimplex(b)
-    if (Math.min(s.x, s.y, s.z) < -0.1) return
-    this.strategy = toInnerSimplex(boxToSimplex(b))
-    console.log(round(this.strategy.x, 2), round(this.strategy.y, 2), round(this.strategy.z, 2))
+    const s = vecToSpend(b)
+    if (s.min() < -0.1) return
+    this.spend = toValidSpend(vecToSpend(b))
+    console.log(b.toString())
+    console.log(this.spend.toString())
     this.draw()
   }
 }

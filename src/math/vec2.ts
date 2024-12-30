@@ -18,4 +18,8 @@ export class Vec2 {
   static combine (a: number, v: Vec2, b: number, w: Vec2): Vec2 {
     return new Vec2(a * v.x + b * w.x, a * v.y + b * w.y)
   }
+
+  toString (): string {
+    return `x: ${this.x.toFixed(2)}, y: ${this.y.toFixed(2)}`
+  }
 }
