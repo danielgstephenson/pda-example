@@ -5,8 +5,8 @@ import { Player } from './player'
 export class Game {
   income = 100
   productivity = 1
-  defensePower = 5
-  attackCost = 1 / 5
+  defensePower = 2
+  attackCost = 2
   defensePowerInput: HTMLInputElement
   attackCostInput: HTMLInputElement
   compositeSpan: HTMLSpanElement

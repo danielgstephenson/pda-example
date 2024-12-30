@@ -4,7 +4,7 @@ import { Policy } from './math/policy'
 import { Game } from './game'
 
 export class Player {
-  static resolution = 50
+  static resolution = 200
   game: Game
   canvas: HTMLCanvasElement
   context: CanvasRenderingContext2D
@@ -14,6 +14,7 @@ export class Player {
   defendSpan: HTMLSpanElement
   attackSpan: HTMLSpanElement
   payoffSpan: HTMLSpanElement
+  labelSpace: HTMLSpanElement
   index: 1 | 2
   otherIndex: 1 | 2
   drawX = 0.0
@@ -38,6 +39,7 @@ export class Player {
     this.defendSpan = document.getElementById(`defendSpan${this.index}`) as HTMLSpanElement
     this.attackSpan = document.getElementById(`attackSpan${this.index}`) as HTMLSpanElement
     this.payoffSpan = document.getElementById(`payoffSpan${this.index}`) as HTMLSpanElement
+    this.labelSpace = document.getElementById(`labelSpace${this.index}`) as HTMLSpanElement
     this.canvas.addEventListener('mousedown', (event: MouseEvent) => this.onMouseDown(event))
   }
 
@@ -119,16 +121,17 @@ export class Player {
   }
 
   setupCanvas (): void {
-    const W = 40
+    const W = 50
     const H = 0.5 * sqrt3 * W
-    this.canvas.style.width = '40vmin'
+    this.canvas.style.width = `${W}vmin`
     this.canvas.style.height = `${H}vmin`
+    this.labelSpace.style.width = `${W - 10}vmin`
   }
 
   resetContext (): void {
     this.context.resetTransform()
     this.context.translate(0, this.canvas.height)
-    this.context.scale(this.canvas.width, -this.canvas.height)
+    this.context.scale(this.canvas.width, -this.canvas.height * 2 / sqrt3)
     this.context.globalAlpha = 1
     this.context.imageSmoothingEnabled = false
   }
@@ -138,9 +141,9 @@ export class Player {
     const canvasY = 1 - event.offsetY / this.canvas.clientHeight
     const boxX = (canvasX - this.drawX) / this.drawSize
     const boxY = (canvasY - this.drawY) / this.drawSize
-    const b = new Vec2(boxX, boxY)
+    const b = new Vec2(boxX, 0.5 * sqrt3 * boxY)
     const s = vecToPolicy(b)
-    if (s.min() < -0.1) return
+    if (s.min() < -0.01) return
     this.policy = toValidPolicy(vecToPolicy(b))
     this.game.draw()
   }

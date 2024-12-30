@@ -7,7 +7,6 @@ canvas {
   image-rendering: crisp-edges;
   width: 40vmin;
   height: 40vmin;
-  outline: 0.2vmin solid black;
 }
 #mainDiv {
   display: flex;
@@ -34,10 +33,27 @@ canvas {
   align-items: center;
   padding: 1vmin;
   outline: 0.2vmin solid black;
+  gap: 5vmin;
+}
+.triangleDiv {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.labelDiv {
+  font: 3vmin sans-serif;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.labelSpace {
+  width: 40vmin
 }
 .titleDiv {
   font: 10vmin sans-serif;
 }
 .infoDiv {
-  font: 5vmin sans-serif;
+  font: 4vmin sans-serif;
 }
