@@ -8,11 +8,35 @@
   </head>
   <body>
     <div id="mainDiv">
-      <div id="leftDiv">      
-        <canvas id="leftCanvas"></canvas>
+      <div class="parameterDiv">
+        <div id="settingsDiv">
+          Defense Power: <input id="defensePowerInput" class='parameterInput' type="number" min="0" step="0.01" value="1"><br>
+          Attack Cost: <input id="attackCostInput" class='parameterInput' type="number" min="0" step="0.01" value="1"><br>
+          <br>
+          <b>Equivalent</b><br>
+          Defense Power: <span id="defensePowerSpan">1</span><br>
+          Attack Cost: 1<br>
+        </div>
       </div>
-      <div id="rightDiv">
-        <canvas id="rightCanvas"></canvas>
+      <div class="playerDiv">
+        <div class="titleDiv">Player 1</div>
+        <canvas id="canvas1"></canvas>
+        <div class="infoDiv">
+          Produce: <span id="produceSpan1">0</span> <br>
+          Defend: <span id="defendSpan1">0</span> <br>
+          Attack: <span id="attackSpan1">0</span> <br>
+          Payoff: <span id="payoffSpan1">0</span> <br>
+        </div>
+      </div>
+      <div class="playerDiv">
+        <div class="titleDiv">Player 2</div>
+        <canvas id="canvas2"></canvas>
+        <div class="infoDiv">
+          Produce: <span id="produceSpan2">0</span> <br>
+          Defend: <span id="defendSpan2">0</span> <br>
+          Attack: <span id="attackSpan2">0</span> <br>
+          Payoff: <span id="payoffSpan2">0</span> <br>
+        </div>
       </div>
       <script type='module' src="index.ts"></script>
     </div>

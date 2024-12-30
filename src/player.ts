@@ -1,57 +1,83 @@
-import { vecToSpend, spendToVec, sqrt3, toValidSpend } from './math/math'
+import { vecToPolicy, policyToVec, sqrt3, toValidPolicy, range } from './math/math'
 import { Vec2 } from './math/vec2'
-import { Spend } from './math/spend'
+import { Policy } from './math/policy'
+import { Game } from './game'
 
 export class Player {
-  static resolution = 100
+  static resolution = 50
+  game: Game
   canvas: HTMLCanvasElement
   context: CanvasRenderingContext2D
-  imageData: ImageData
   offscreenCanvas: OffscreenCanvas
   offscreenContext: OffscreenCanvasRenderingContext2D
-
+  produceSpan: HTMLSpanElement
+  defendSpan: HTMLSpanElement
+  attackSpan: HTMLSpanElement
+  payoffSpan: HTMLSpanElement
+  index: 1 | 2
+  otherIndex: 1 | 2
   drawX = 0.1
   drawY = 0.1
   drawSize = 0.8
+  policy = new Policy(1 / 3, 1 / 3, 1 / 3)
+  payoff = 0
+  maxPay = 1
+  minPay = 0
 
-  spend = new Spend(1 / 3, 1 / 3, 1 / 3)
-
-  constructor (canvas: HTMLCanvasElement) {
-    this.canvas = canvas
+  constructor (game: Game, index: 1 | 2) {
+    this.game = game
+    this.index = index
+    this.otherIndex = index === 1 ? 2 : 1
+    this.canvas = document.getElementById(`canvas${this.index}`) as HTMLCanvasElement
     this.canvas.width = 1000
     this.canvas.height = 1000
-    this.canvas.style.imageRendering = 'pixelated'
     this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D
-    this.imageData = this.getImageData()
     this.offscreenCanvas = new OffscreenCanvas(Player.resolution, Player.resolution)
     this.offscreenContext = this.offscreenCanvas.getContext('2d') as OffscreenCanvasRenderingContext2D
+    this.produceSpan = document.getElementById(`produceSpan${this.index}`) as HTMLSpanElement
+    this.defendSpan = document.getElementById(`defendSpan${this.index}`) as HTMLSpanElement
+    this.attackSpan = document.getElementById(`attackSpan${this.index}`) as HTMLSpanElement
+    this.payoffSpan = document.getElementById(`payoffSpan${this.index}`) as HTMLSpanElement
     this.canvas.addEventListener('mousedown', (event: MouseEvent) => this.onMouseDown(event))
-    this.draw()
   }
 
   getImageData (): ImageData {
     const width = Player.resolution
     const height = Player.resolution
+    const otherPolicy = this.game.players[this.otherIndex].policy
     const imageArray = new Uint8ClampedArray(4 * width * height)
-    imageArray.forEach((uint, i) => {
-      if (i % 4 !== 0) return
-      const pixel = Math.floor(i / 4)
+    const pixels = range(width * height)
+    const payoffs = pixels.map(pixel => {
       const x = (pixel % width + 0.5) / width
       const y = (Math.floor(pixel / width) + 0.5) / height
-      const w = toValidSpend(vecToSpend(new Vec2(x, y)))
-      imageArray[i + 0] = 0 // R value
-      imageArray[i + 1] = w.produce * w.produce * 250 // G value
-      imageArray[i + 2] = 0 // B value
-      imageArray[i + 3] = 255 // A value
+      const policy = toValidPolicy(vecToPolicy(new Vec2(x, y)))
+      return this.game.getPayoff(policy, otherPolicy)
+    })
+    const maxPay = Math.max(...payoffs)
+    const minPay = Math.max(0, Math.min(...payoffs, maxPay - 0.001))
+    const payRange = maxPay - minPay
+    this.minPay = minPay
+    this.maxPay = maxPay
+    pixels.forEach(pixel => {
+      const index = 4 * pixel
+      const level = (payoffs[pixel] - minPay) / payRange
+      const green = Math.pow(level, 3)
+      const red = Math.pow(green, 5)
+      imageArray[index + 0] = red * 255 // R value
+      imageArray[index + 1] = green * 255 // G value
+      imageArray[index + 2] = 0 // B value
+      imageArray[index + 3] = 255 // A value
     })
     return new ImageData(imageArray, width, height)
   }
 
   draw (): void {
+    this.updateText()
+    const imageData = this.getImageData()
     this.resetContext()
     this.context.fillStyle = 'white'
     this.context.fillRect(0, 0, 1, 1)
-    this.offscreenContext.putImageData(this.imageData, 0, 0)
+    this.offscreenContext.putImageData(imageData, 0, 0)
     this.context.save()
     this.context.beginPath()
     const x = this.drawX
@@ -69,10 +95,17 @@ export class Player {
     this.drawStrategy()
   }
 
+  updateText (): void {
+    this.produceSpan.innerHTML = (this.game.income * this.policy.produce).toFixed(1)
+    this.defendSpan.innerHTML = (this.game.income * this.policy.defend).toFixed(1)
+    this.attackSpan.innerHTML = (this.game.income * this.policy.attack).toFixed(1)
+    this.payoffSpan.innerHTML = this.payoff.toFixed(1)
+  }
+
   drawStrategy (): void {
-    if (this.spend == null) return
+    if (this.policy == null) return
     this.resetContext()
-    const b = spendToVec(this.spend)
+    const b = policyToVec(this.policy)
     const x = this.drawX + this.drawSize * b.x
     const y = this.drawX + this.drawSize * b.y
     this.context.lineWidth = 0.005
@@ -96,11 +129,15 @@ export class Player {
     const boxX = (canvasX - this.drawX) / this.drawSize
     const boxY = (canvasY - this.drawY) / this.drawSize
     const b = new Vec2(boxX, boxY)
-    const s = vecToSpend(b)
+    const s = vecToPolicy(b)
     if (s.min() < -0.1) return
-    this.spend = toValidSpend(vecToSpend(b))
-    console.log(b.toString())
-    console.log(this.spend.toString())
-    this.draw()
+    this.policy = toValidPolicy(vecToPolicy(b))
+    const otherPolicy = this.game.players[this.otherIndex].policy
+    this.payoff = this.game.getPayoff(this.policy, otherPolicy)
+    console.log('myPolicy', this.policy.toString())
+    console.log('otherPolicy', otherPolicy.toString())
+    console.log('myPayoff', this.payoff.toFixed(1))
+    console.log('payRange', this.minPay.toFixed(1), this.maxPay.toFixed(1))
+    this.game.draw()
   }
 }

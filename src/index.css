@@ -5,8 +5,8 @@ body {
 canvas {
   background-color: white;
   image-rendering: crisp-edges;
-  width: 40vw;
-  height: 40vw;
+  width: 40vmin;
+  height: 40vmin;
   outline: 0.2vmin solid black;
 }
 #mainDiv {
@@ -15,16 +15,28 @@ canvas {
   width: 100vw;
   justify-content: center;
   align-items: flex-start;
+  gap: 5vmin;
 }
-#leftDiv {
+#settingsDiv {
+  padding: 1vmin;
+  outline: 0.2vmin solid black;
+  font: 3vmin sans-serif;
+}
+.parameterInput {
+  font: 3vmin sans-serif;
+  width: 10vmin
+}
+.playerDiv {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 1vmin;
+  outline: 0.2vmin solid black;
 }
-#rightDiv {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 1vmin;
+.titleDiv {
+  font: 10vmin sans-serif;
+}
+.infoDiv {
+  font: 5vmin sans-serif;
 }

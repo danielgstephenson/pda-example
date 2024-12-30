@@ -1,4 +1,4 @@
-export class Spend {
+export class Policy {
   produce: number
   defend: number
   attack: number
