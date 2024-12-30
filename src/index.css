@@ -16,6 +16,7 @@ canvas {
   justify-content: center;
   align-items: flex-start;
   gap: 5vmin;
+  padding-top: 1vmin;
 }
 #settingsDiv {
   padding: 1vmin;

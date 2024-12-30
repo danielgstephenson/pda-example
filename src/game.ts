@@ -5,10 +5,11 @@ import { Player } from './player'
 export class Game {
   income = 100
   productivity = 1
-  defendPower = 1
-  attackCost = 1 / 6
+  defensePower = 5
+  attackCost = 1 / 5
   defensePowerInput: HTMLInputElement
   attackCostInput: HTMLInputElement
+  compositeSpan: HTMLSpanElement
   players: {
     1: Player
     2: Player
@@ -21,6 +22,11 @@ export class Game {
     }
     this.defensePowerInput = document.getElementById('defensePowerInput') as HTMLInputElement
     this.attackCostInput = document.getElementById('attackCostInput') as HTMLInputElement
+    this.compositeSpan = document.getElementById('compositeSpan') as HTMLSpanElement
+    this.defensePowerInput.value = this.defensePower.toString()
+    this.attackCostInput.value = this.attackCost.toString()
+    this.defensePowerInput.onchange = () => this.draw()
+    this.attackCostInput.onchange = () => this.draw()
     this.draw()
   }
 
@@ -36,8 +42,8 @@ export class Game {
     const otherPurchase = this.policyToPurchase(otherPolicy)
     const myOutput = this.productivity * myPurchase.produce
     const otherOutput = this.productivity * otherPurchase.produce
-    const myDefend = this.defendPower * myPurchase.defend
-    const otherDefend = this.defendPower * otherPurchase.defend
+    const myDefend = this.defensePower * myPurchase.defend
+    const otherDefend = this.defensePower * otherPurchase.defend
     const myAttack = myPurchase.attack
     const otherAttack = otherPurchase.attack
     const myConflict = myDefend + otherAttack
@@ -48,7 +54,10 @@ export class Game {
   }
 
   draw (): void {
+    this.defensePower = Number(this.defensePowerInput.value)
+    this.attackCost = Number(this.attackCostInput.value)
     this.players[1].draw()
     this.players[2].draw()
+    this.compositeSpan.innerHTML = (this.defensePower * this.attackCost).toFixed(3)
   }
 }

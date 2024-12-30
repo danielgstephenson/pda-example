@@ -16,9 +16,9 @@ export class Player {
   payoffSpan: HTMLSpanElement
   index: 1 | 2
   otherIndex: 1 | 2
-  drawX = 0.1
-  drawY = 0.1
-  drawSize = 0.8
+  drawX = 0.0
+  drawY = 0.0
+  drawSize = 1
   policy = new Policy(1 / 3, 1 / 3, 1 / 3)
   payoff = 0
   maxPay = 1
@@ -74,6 +74,7 @@ export class Player {
   draw (): void {
     this.updateText()
     const imageData = this.getImageData()
+    this.setupCanvas()
     this.resetContext()
     this.context.fillStyle = 'white'
     this.context.fillRect(0, 0, 1, 1)
@@ -96,6 +97,8 @@ export class Player {
   }
 
   updateText (): void {
+    const otherPolicy = this.game.players[this.otherIndex].policy
+    this.payoff = this.game.getPayoff(this.policy, otherPolicy)
     this.produceSpan.innerHTML = (this.game.income * this.policy.produce).toFixed(1)
     this.defendSpan.innerHTML = (this.game.income * this.policy.defend).toFixed(1)
     this.attackSpan.innerHTML = (this.game.income * this.policy.attack).toFixed(1)
@@ -115,6 +118,13 @@ export class Player {
     this.context.stroke()
   }
 
+  setupCanvas (): void {
+    const W = 40
+    const H = 0.5 * sqrt3 * W
+    this.canvas.style.width = '40vmin'
+    this.canvas.style.height = `${H}vmin`
+  }
+
   resetContext (): void {
     this.context.resetTransform()
     this.context.translate(0, this.canvas.height)
@@ -132,12 +142,6 @@ export class Player {
     const s = vecToPolicy(b)
     if (s.min() < -0.1) return
     this.policy = toValidPolicy(vecToPolicy(b))
-    const otherPolicy = this.game.players[this.otherIndex].policy
-    this.payoff = this.game.getPayoff(this.policy, otherPolicy)
-    console.log('myPolicy', this.policy.toString())
-    console.log('otherPolicy', otherPolicy.toString())
-    console.log('myPayoff', this.payoff.toFixed(1))
-    console.log('payRange', this.minPay.toFixed(1), this.maxPay.toFixed(1))
     this.game.draw()
   }
 }
