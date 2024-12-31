@@ -9,7 +9,6 @@ export class Game {
   attackCost = 2
   defensePowerInput: HTMLInputElement
   attackCostInput: HTMLInputElement
-  compositeSpan: HTMLSpanElement
   players: {
     1: Player
     2: Player
@@ -22,7 +21,6 @@ export class Game {
     }
     this.defensePowerInput = document.getElementById('defensePowerInput') as HTMLInputElement
     this.attackCostInput = document.getElementById('attackCostInput') as HTMLInputElement
-    this.compositeSpan = document.getElementById('compositeSpan') as HTMLSpanElement
     this.defensePowerInput.value = this.defensePower.toString()
     this.attackCostInput.value = this.attackCost.toString()
     this.defensePowerInput.onchange = () => this.draw()
@@ -58,6 +56,5 @@ export class Game {
     this.attackCost = Number(this.attackCostInput.value)
     this.players[1].draw()
     this.players[2].draw()
-    this.compositeSpan.innerHTML = (this.defensePower * this.attackCost).toFixed(3)
   }
 }

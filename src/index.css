@@ -55,5 +55,19 @@ canvas {
   font: 10vmin sans-serif;
 }
 .infoDiv {
-  font: 4vmin sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font: 3vmin sans-serif;
+}
+.infoRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 10vmin;
+}
+.infoText {
+  font: 3vmin sans-serif;
 }

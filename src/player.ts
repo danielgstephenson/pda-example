@@ -14,6 +14,9 @@ export class Player {
   defendSpan: HTMLSpanElement
   attackSpan: HTMLSpanElement
   payoffSpan: HTMLSpanElement
+  producePurchaseSpan: HTMLSpanElement
+  defendPurchaseSpan: HTMLSpanElement
+  attackPurchaseSpan: HTMLSpanElement
   labelSpace: HTMLSpanElement
   index: 1 | 2
   otherIndex: 1 | 2
@@ -39,6 +42,9 @@ export class Player {
     this.defendSpan = document.getElementById(`defendSpan${this.index}`) as HTMLSpanElement
     this.attackSpan = document.getElementById(`attackSpan${this.index}`) as HTMLSpanElement
     this.payoffSpan = document.getElementById(`payoffSpan${this.index}`) as HTMLSpanElement
+    this.producePurchaseSpan = document.getElementById(`producePurchaseSpan${this.index}`) as HTMLSpanElement
+    this.defendPurchaseSpan = document.getElementById(`defendPurchaseSpan${this.index}`) as HTMLSpanElement
+    this.attackPurchaseSpan = document.getElementById(`attackPurchaseSpan${this.index}`) as HTMLSpanElement
     this.labelSpace = document.getElementById(`labelSpace${this.index}`) as HTMLSpanElement
     this.canvas.addEventListener('mousedown', (event: MouseEvent) => this.onMouseDown(event))
   }
@@ -101,10 +107,16 @@ export class Player {
   updateText (): void {
     const otherPolicy = this.game.players[this.otherIndex].policy
     this.payoff = this.game.getPayoff(this.policy, otherPolicy)
-    this.produceSpan.innerHTML = (this.game.income * this.policy.produce).toFixed(1)
-    this.defendSpan.innerHTML = (this.game.income * this.policy.defend).toFixed(1)
-    this.attackSpan.innerHTML = (this.game.income * this.policy.attack).toFixed(1)
+    const produceSpend = this.game.income * this.policy.produce
+    const defendSpend = this.game.income * this.policy.defend
+    const attackSpend = this.game.income * this.policy.attack
     this.payoffSpan.innerHTML = this.payoff.toFixed(1)
+    this.produceSpan.innerHTML = produceSpend.toFixed(1)
+    this.defendSpan.innerHTML = defendSpend.toFixed(1)
+    this.attackSpan.innerHTML = attackSpend.toFixed(1)
+    this.producePurchaseSpan.innerHTML = produceSpend.toFixed(1)
+    this.defendPurchaseSpan.innerHTML = defendSpend.toFixed(1)
+    this.attackPurchaseSpan.innerHTML = (attackSpend / this.game.attackCost).toFixed(1)
   }
 
   drawStrategy (): void {
