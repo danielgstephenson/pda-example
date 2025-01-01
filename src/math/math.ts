@@ -28,6 +28,19 @@ export function round (x: number, digits: number): number {
   return Number(x.toFixed(digits))
 }
 
+export function sum (v: number[]): number {
+  let result = 0
+  v.forEach(x => {
+    result += x
+  })
+  return result
+}
+
+export function mean (v: number[]): number {
+  if (v.length === 0) return 0
+  return sum(v) / v.length
+}
+
 export function range (length: number): number[] {
   return [...Array(length).keys()]
 }
