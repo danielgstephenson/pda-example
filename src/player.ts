@@ -70,10 +70,11 @@ export class Player {
       const index = 4 * pixel
       const level = (payoffs[pixel] - minPay) / payRange
       const green = Math.pow(level, 7)
-      const red = Math.pow(green, 10)
-      imageArray[index + 0] = red * 255 // R value
+      const red = Math.pow(green, 16)
+      const blue = Math.pow(green, 16)
+      imageArray[index + 0] = red * 180 // R value
       imageArray[index + 1] = green * 255 // G value
-      imageArray[index + 2] = 0 // B value
+      imageArray[index + 2] = blue * 180 // B value
       imageArray[index + 3] = 255 // A value
     })
     return new ImageData(imageArray, width, height)
