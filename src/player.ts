@@ -1,4 +1,4 @@
-import { vecToPolicy, policyToVec, sqrt3, toValidPolicy, range, mean } from './math/math'
+import { vecToPolicy, policyToVec, sqrt3, toValidPolicy, range } from './math/math'
 import { Vec2 } from './math/vec2'
 import { Policy } from './math/policy'
 import { Game } from './game'
@@ -61,16 +61,15 @@ export class Player {
       const policy = toValidPolicy(vecToPolicy(new Vec2(x, y)))
       return this.game.getPayoff(policy, otherPolicy)
     })
-    const sortedPixels = pixels.toSorted((i, j) => payoffs[i] - payoffs[j])
     const maxPay = Math.max(...payoffs)
     const minPay = Math.max(0, Math.min(...payoffs, maxPay - 0.001))
     const payRange = maxPay - minPay
     this.minPay = minPay
     this.maxPay = maxPay
-    sortedPixels.forEach((pixel, i) => {
+    pixels.forEach((pixel, i) => {
       const index = 4 * pixel
-      const level = i / (sortedPixels.length - 1) // (payoffs[pixel] - minPay) / payRange
-      const green = Math.pow(level, 2)
+      const level = (payoffs[pixel] - minPay) / payRange
+      const green = Math.pow(level, 7)
       const red = Math.pow(green, 10)
       imageArray[index + 0] = red * 255 // R value
       imageArray[index + 1] = green * 255 // G value
